@@ -7,38 +7,38 @@ class API:
         self.url = url
         self.auth = (usr, passwd)
 
-    def get(self, url, query):
+    def __get(self, url, query):
         return requests.get(url, params=query, auth=self.auth, verify=False).json()
     
-    def post(self, url, query):
+    def __post(self, url, query):
         return requests.post(url, params=query, auth=self.auth, verify=False).json()
 
     def sentences(self, sentences):
         url = self.url + '/jmat/sentence'
         query = {'query': sentences}
-        return self.get(url, query)
+        return self.__get(url, query)
 
     def tweet(self, message):
         url = self.url + '/tweet/simple'
         name = 'js_devbot04'
         query = {'bot_name': name, 'message': message}
-        return self.post(url, query)
+        return self.__post(url, query)
 
     def get_reply(self):
         url = self.url + '/tweet/get_reply'
         name = 'js_devbot04'
         query = {'bot_name': name}
-        return self.get(url, query)
+        return self.__get(url, query)
 
     def search_tweets(self, query, limit=10):
         url = self.url + '/search/tweet'
         query = {'query': query, 'limit': limit}
-        return self.get(url, query)
+        return self.__get(url, query)
 
     def markov_chain(self, seed):
         url = self.url + '/tk/markov'
         query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
-        return self.get(url, query)
+        return self.__get(url, query)
 
 api = API('https://52.68.75.108', 'secret', 'js2015cps')
 
