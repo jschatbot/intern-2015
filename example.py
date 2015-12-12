@@ -35,11 +35,6 @@ class API:
         query = {'query': query, 'limit': limit}
         return self.__get(url, query)
 
-    def markov_chain(self, seed):
-        url = self.url + '/tk/markov'
-        query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
-        return self.__get(url, query)
-
     def search_tweets(self, query, limit=10):
         url = self.url + '/search/tweet'
         query = {'query': query, 'limit': limit}
@@ -50,6 +45,15 @@ class API:
         query = {'query': query, 'limit': limit}
         return self.__get(url, query)
 
+    def markov_chain(self, seed):
+        url = self.url + '/tk/markov'
+        query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
+        return self.__get(url, query)
+    
+    def rewrite_morph(self, file_name, morphs):
+        url = self.url + '/tk/rewrite'
+        query = {'rule': file_name, 'morphs': morphs}
+        return self.__post(url, query)
 
 api = API('https://52.68.75.108', 'secret', 'js2015cps')
 
@@ -79,6 +83,13 @@ seed = {'norm_surface': "今日", 'pos': "名詞"}
 for morph in  api.markov_chain(seed)['morphs']:
     print morph,
 
+# エラーが出る。。
+#print
+#print '書き換え'
+#print '=' * 20
+#morphs = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
+#for morph in api.rewrite_morph('rule_test.txt', morphs)['morphs']:
+#    print morph
 
 # エラーが出る。。。
 #print api.tweet('ツイートテスト! ')
