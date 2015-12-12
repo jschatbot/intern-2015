@@ -40,18 +40,45 @@ class API:
         query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
         return self.__get(url, query)
 
+    def search_tweets(self, query, limit=10):
+        url = self.url + '/search/tweet'
+        query = {'query': query, 'limit': limit}
+        return self.__get(url, query)
+    
+    def search_reply(self, query, limit=10):
+        url = self.url + '/search/reply'
+        query = {'query': query, 'limit': limit}
+        return self.__get(url, query)
+
+
 api = API('https://52.68.75.108', 'secret', 'js2015cps')
 
+print
+print '文分割'
 s = '日本語文字列を文単位で分割する。複数文を渡すと、文ごとに区切ってくれる。'
 for sentence in  api.sentences(s)['sentences']:
     print sentence
 
+
+print
+print 'ツイート検索'
+print '=' * 20
 for text in api.search_tweets('検索')['texts']:
     print text
 
+print
+print 'リプライ検索'
+print '=' * 20
+for text in api.search_reply('検索')['texts']:
+    print text
+
+print
+print 'マルコフ連鎖'
+print '=' * 20
 seed = {'norm_surface': "今日", 'pos': "名詞"}
 for morph in  api.markov_chain(seed)['morphs']:
     print morph,
+
 
 # エラーが出る。。。
 #print api.tweet('ツイートテスト! ')
