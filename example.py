@@ -7,28 +7,38 @@ class API:
         self.url = url
         self.auth = (usr, passwd)
 
+    def get(self, url, query):
+        return requests.get(url, params=query, auth=self.auth, verify=False).json()
+    
+    def post(self, url, query):
+        return requests.post(url, params=query, auth=self.auth, verify=False).json()
+
     def sentences(self, sentences):
-        url = '/jmat/sentence'
+        url = self.url + '/jmat/sentence'
         query = {'query': sentences}
-        return requests.get(self.url + url, params=query, auth=self.auth, verify=False).json()
+        return self.get(url, query)
 
     def tweet(self, message):
-        url = '/tweet/simple'
+        url = self.url + '/tweet/simple'
         name = 'js_devbot04'
         query = {'bot_name': name, 'message': message}
-        return requests.post(self.url + url, params=query, auth=self.auth, verify=False).json()
+        return self.post(url, query)
 
     def get_reply(self):
-        url = '/tweet/get_reply'
+        url = self.url + '/tweet/get_reply'
         name = 'js_devbot04'
         query = {'bot_name': name}
-        return requests.get(self.url + url, params=query, auth=self.auth, verify=False).json()
+        return self.get(url, query)
 
     def search_tweets(self, query, limit=10):
-        url = '/search/tweet'
+        url = self.url + '/search/tweet'
         query = {'query': query, 'limit': limit}
-        return requests.get(self.url + url, params=query, auth=self.auth, verify=False).json()
+        return self.get(url, query)
 
+    def markov_chain(self, seed):
+        url = self.url + '/tk/markov'
+        query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
+        return self.get(url, query)
 
 api = API('https://52.68.75.108', 'secret', 'js2015cps')
 
@@ -38,6 +48,10 @@ for sentence in  api.sentences(s)['sentences']:
 
 for text in api.search_tweets('検索')['texts']:
     print text
+
+seed = {'norm_surface': "今日", 'pos': "名詞"}
+for morph in  api.markov_chain(seed)['morphs']:
+    print morph,
 
 # エラーが出る。。。
 #print api.tweet('ツイートテスト! ')
