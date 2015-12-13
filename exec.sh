@@ -1,1 +1,1 @@
-python one_cycle.py --all
+python one_cycle.py
