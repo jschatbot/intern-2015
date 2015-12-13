@@ -95,7 +95,7 @@ class API:
                 query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': s } ] }
                 self.__post(url, query)
                 s = morph['surface']
-            else
+            else:
                 s = s + morph['surface']
         query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': s } ] }
         return self.__post(url, query)
