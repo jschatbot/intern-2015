@@ -3,10 +3,13 @@
 import requests
 import json
 
+
 class API:
     def __init__(self, url, usr, passwd):
         self.url = url
         self.auth = (usr, passwd)
+        if usr is None:
+            self.auth = None
 
     def __get(self, url, query):
         return requests.get(url, params=query, auth=self.auth, verify=False).json()
