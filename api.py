@@ -94,7 +94,7 @@ class API:
                 continue
             if len(s + morph['surface'])>120:
                 mention = { 'mention_id': mention_id, 'user_name': user_name, 'message': s }
-                mention.append(mention)
+                mentions.append(mention)
                 s = morph['surface']
             else:
                 s = s + morph['surface']
