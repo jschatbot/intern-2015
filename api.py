@@ -98,5 +98,5 @@ class API:
                 s = morph['surface']
             else:
                 s = s + morph['surface']
-        query = {'bot_name': name, 'replies': [mentions] }
+        query = {'bot_name': name, 'replies': mentions}
         return self.__post(url, query)
