@@ -17,6 +17,7 @@ Option:
 """
 
 import sys
+import random
 from docopt import docopt
 import api
 
@@ -84,6 +85,23 @@ def markov_based(text):
     return postprocess(reply_text)
 
 
+def scenario_based(text):
+    sent = api.sentences(text)
+    text = []
+    for s in sent['sentences']:
+        morphs = api.morph(s)
+        query = list()
+        for morph in morphs['morphs']:
+            query.append(u'{}:{}'.format(morph['surface'], morph['pos']))
+    texts = api.trigger(scenario_file,query)
+    for t in texts['texts']:
+        text.append(t)
+    if len(text)>0:
+        r = random.randint(0,len(text)-1)
+        return text[r]
+    return None
+
+
 def reply_one(mention_id, user_name, text):
     reply_text = twitter_based(text)
     api.send_reply(mention_id, user_name, reply_text)
@@ -100,7 +118,9 @@ if __name__ == '__main__':
 
     rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
     rewrite_rule = 'rule_test.txt'
-    
+    scenario_file = 'scenario_c09.txt'
+   
+
     if args['--term']:
         print 'chatbot on this terminal'
         print 'input your message'
@@ -109,6 +129,8 @@ if __name__ == '__main__':
             print twitter_based(line.decode('utf-8'))
             print 'markov'
             print markov_based(line.decode('utf-8'))
+            print 'scenario'
+            print scenario_based(line.decode('utf-8'))
     else:
         # すべてのメンションに対して返信
         for reply in replies:
