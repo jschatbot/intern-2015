@@ -34,15 +34,14 @@ def get_api():
     return api.API(url, usr, paswd)
 
 def generate_seed(text):
-    #TODO とりあえず最初の文の最初の名詞を利用, なければ最初の形態素
-    sentences = api.sentences(text)['sentences']
-    morphs = api.morph(sentences[0])['morphs']
-    for morph in morphs:
-        if '固有名詞' in morph['pos']:
-            seed = morph
-            break
-    else:
-        seed = morphs[1]
+    for sentence in api.sentences(text)['sentences']:
+        morphs = api.morph(sentence)['morphs']
+        for morph in morphs:
+            if u'固有' in morph['pos']:
+                seed = morph
+                break
+            else:
+                seed = morphs[1]
     return seed
 
 def preprocess(text):
@@ -57,8 +56,19 @@ def preprocess(text):
         seed = morphs[1]
     return seed
 
+def postprocess(sent):
+    morphs = api.morph(sent)['morphs']
+    query = list()
+    for morph in morphs:
+        query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
+    morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
+    sent = u''
+    for morph in morphs[1:-1]:
+        sent += u':'.join(morph.split(u':')[:-1])
+    return sent
+
 def twitter_based(text):
-    seed = preprocess(text)
+    seed = generate_seed(text)
     # TODO とりあえずツイート検索結果の最初のツイートを利用
     tweet_example = api.search_tweets(seed['norm_surface'], limit=1)
     # 空ならNoneを返す
@@ -67,23 +77,14 @@ def twitter_based(text):
     # TODO とりあえず先頭の文を利用
     # 形態素列書き換え
     sent = api.sentences(tweet_example['texts'][0])['sentences'][0]
-    morphs = api.morph(sent)['morphs']
-    query = list()
-    for morph in morphs:
-        query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
-    morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
-
-    reply_text = u''
-    for morph in morphs[1:-1]:
-        reply_text += u':'.join(morph.split(u':')[:-1])
-    return reply_text
+    return postprocess(sent)
 
 def markov_based(text):
     seed =  generate_seed(text)
     reply_text = u''
     for morph in api.markov_chain(seed)['morphs'][1:-1]:
         reply_text += u':'.join(morph.split(u':')[:-1])#morph.split(':')[0]
-    return reply_text
+    return postprocess(reply_text)
 
 def reply_one(mention_id, user_name, text):
     reply_text = twitter_based(text)
@@ -94,9 +95,11 @@ if __name__ == '__main__':
     api = api.API('https://52.68.75.108', 'secret', 'js2015cps')
     #rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
     rewrite_rule = 'rule_test.txt'
-    text = "スペースシャトルはすごい"
+    text = "おはよう"
+    for morph in api.morph(text)['morphs']:
+        print morph['norm_surface'] + "\t" + morph['pos']
     print markov_based(text)
-    print twitter_based("今日")
+    print twitter_based(text)
 
 #result = api.get_reply()
 #current_state = result['grade']
