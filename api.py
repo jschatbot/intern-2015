@@ -84,7 +84,10 @@ class API:
     def send_reply(self, mention_id, user_name, message):
         url = self.url + '/tweet/send_reply'
         name = 'js_devbot04'
-        if len(message) >= 120:
-            message = message[0:120]
+        while len(message) >= 120:
+            text = message[0:120]
+            query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': text } ] }
+            self.__post(url, query)
+            message = message[120:]
         query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': message } ] }
         return self.__post(url, query)
