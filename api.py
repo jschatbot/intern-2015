@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import api
+import requests
+import json
 
-<<<<<<< HEAD
 class API:
     def __init__(self, url, usr, passwd):
         self.url = url
@@ -10,14 +10,29 @@ class API:
 
     def __get(self, url, query):
         return requests.get(url, params=query, auth=self.auth, verify=False).json()
-
+    
     def __post(self, url, query):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers)
+        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers).json()
 
     def sentences(self, sentences):
         url = self.url + '/jmat/sentence'
         query = {'query': sentences}
+        return self.__get(url, query)
+    
+    def morph(self, sentence):
+        url = self.url + '/jmat/morph'
+        query = {'query': sentence}
+        return self.__get(url, query)
+
+    def chunk(self, sentence):
+        url = self.url + '/jmat/chunk'
+        query = {'query': sentence}
+        return self.__get(url, query)
+
+    def synonym(self, sentence):
+        url = self.url + '/jmat/synonym'
+        query = {'query': sentence}
         return self.__get(url, query)
 
     def tweet(self, message):
@@ -36,12 +51,7 @@ class API:
         url = self.url + '/search/tweet'
         query = {'query': query, 'limit': limit}
         return self.__get(url, query)
-
-    def search_tweets(self, query, limit=10):
-        url = self.url + '/search/tweet'
-        query = {'query': query, 'limit': limit}
-        return self.__get(url, query)
-
+    
     def search_reply(self, query, limit=10):
         url = self.url + '/search/reply'
         query = {'query': query, 'limit': limit}
@@ -51,51 +61,19 @@ class API:
         url = self.url + '/tk/markov'
         query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
         return self.__get(url, query)
-
+    
     def rewrite_morph(self, file_name, morphs):
         url = self.url + '/tk/rewrite'
         query = {'rule': file_name, 'morphs': morphs}
         return self.__post(url, query)
-
-api = API('https://52.68.75.108', 'secret', 'js2015cps')
-=======
-api = api.API('https://52.68.75.108', 'secret', 'js2015cps')
->>>>>>> d20e335b796badee5482862277f90c5e7879abc2
-
-print
-print '文分割'
-s = '日本語文字列を文単位で分割する。複数文を渡すと、文ごとに区切ってくれる。'
-for sentence in  api.sentences(s)['sentences']:
-    print sentence
-
-
-print
-print 'ツイート検索'
-print '=' * 20
-for text in api.search_tweets('検索')['texts']:
-    print text
-
-print
-print 'リプライ検索'
-print '=' * 20
-for text in api.search_reply('検索')['texts']:
-    print text
-
-print
-print 'マルコフ連鎖'
-print '=' * 20
-seed = {'norm_surface': "今日", 'pos': "名詞"}
-for morph in  api.markov_chain(seed)['morphs']:
-    print morph,
-
-# エラーが出る。。
-print
-print '書き換え'
-print '=' * 20
-morphs = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
-for morph in api.rewrite_morph('rule_test.txt', morphs)['morphs']:
-    print morph
-
-# エラーが出る。。。
-print api.tweet('ツイートテスト! ')
-print api.get_reply()
+    
+    def trigger(self, filename ,morphs):
+        url = self.url + '/tk/trigger'
+        quary = {'rule': filename, 'morphs': morphs }
+        return self.__post(url, query)
+    
+    def send_reply(self, mention_id, user_name, message):
+        url = self.url + '/tweet/send_reply'
+        name = 'js_devbot04'
+        query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': message } ] }
+        return self.__post(url, query)
