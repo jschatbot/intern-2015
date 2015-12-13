@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import json
 
 class API:
     def __init__(self, url, usr, passwd):
@@ -11,7 +12,8 @@ class API:
         return requests.get(url, params=query, auth=self.auth, verify=False).json()
     
     def __post(self, url, query):
-        return requests.post(url, params=query, auth=self.auth, verify=False).json()
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers).json()
 
     def sentences(self, sentences):
         url = self.url + '/jmat/sentence'
@@ -84,13 +86,13 @@ for morph in  api.markov_chain(seed)['morphs']:
     print morph,
 
 # エラーが出る。。
-#print
-#print '書き換え'
-#print '=' * 20
-#morphs = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
-#for morph in api.rewrite_morph('rule_test.txt', morphs)['morphs']:
-#    print morph
+print
+print '書き換え'
+print '=' * 20
+morphs = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
+for morph in api.rewrite_morph('rule_test.txt', morphs)['morphs']:
+    print morph
 
 # エラーが出る。。。
-#print api.tweet('ツイートテスト! ')
-#print api.get_reply()
+print api.tweet('ツイートテスト! ')
+print api.get_reply()
