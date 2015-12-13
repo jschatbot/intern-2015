@@ -135,14 +135,28 @@ if __name__ == '__main__':
         print 'chatbot on this terminal'
         print 'input your message'
         for line in iter(sys.stdin.readline, '\n'):
-            line = line.strip()
-            print 'twitter'
-            print twitter_based(line.decode('utf-8'))
-            print 'markov'
-            print markov_based(line.decode('utf-8'))
-            print 'scenario'
-            print scenario_based(line.decode('utf-8'))
-            print '\ninput your message'
+            if args['--all']:
+                for i in range(3):
+                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
+                    print i
+                    line = line.strip()
+                    print 'twitter'
+                    print twitter_based(line.decode('utf-8'))
+                    print 'markov'
+                    print markov_based(line.decode('utf-8'))
+                    print 'scenario'
+                    print scenario_based(line.decode('utf-8'))
+                    print '\ninput your message'
+            else:
+                line = line.strip()
+                print 'twitter'
+                print twitter_based(line.decode('utf-8'))
+                print 'markov'
+                print markov_based(line.decode('utf-8'))
+                print 'scenario'
+                print scenario_based(line.decode('utf-8'))
+                print '\ninput your message'
     else:
         # すべてのメンションに対して返信
         for reply in replies:
