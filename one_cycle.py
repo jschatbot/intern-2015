@@ -42,15 +42,16 @@ def get_api():
 def preprocess(text):
     #TODO とりあえず最初の文の最初の名詞を利用, なければ最初の形態素
     sentences = api.sentences(text)['sentences']
+    seeds = list()
     for sentence in api.sentences(text)['sentences']:
         morphs = api.morph(sentence)['morphs']
         for morph in morphs:
             if u'名詞' in morph['pos']:
-                seed = morph
-                break
-        else:
-            seed = morphs[1]
-    return seed
+                seeds.append(morph)
+        if len(seeds) == 0:
+            seeds.append(morphs[1])
+    rand = random.randint(0, len(seeds)-1)
+    return seeds[rand]
 
 
 # 形態素列書き換え, こっちは文を受け取る
@@ -70,14 +71,15 @@ def postprocess(sent):
 def twitter_based(text):
     seed = preprocess(text)['norm_surface']
 
-    # TODO とりあえずツイート検索結果の最初のツイートを利用
-    tweet_example = api.search_tweets(seed, limit=1)
+    lim = 30
+    rand = random.randint(0, lim-1)
+    tweet_examples = api.search_tweets(seed, limit=lim)
     # 空ならNoneを返す
     if tweet_example['count'] == 0:
         return None
 
     # TODO とりあえず先頭の文を利用
-    sent = api.sentences(tweet_example['texts'][0])['sentences'][0]
+    sent = api.sentences(tweet_example['texts'][rand])['sentences'][0]
     return postprocess(sent)
 
 
