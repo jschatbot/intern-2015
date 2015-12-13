@@ -72,7 +72,7 @@ class API:
     
     def trigger(self, filename ,morphs):
         url = self.url + '/tk/trigger'
-        quary = {'rule': filename, 'morphs': morphs }
+        query = {'rule': filename, 'morphs': morphs }
         return self.__post(url, query)
     
     def send_reply(self, mention_id, user_name, message):
