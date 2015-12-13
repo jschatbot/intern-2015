@@ -84,10 +84,16 @@ class API:
     def send_reply(self, mention_id, user_name, message):
         url = self.url + '/tweet/send_reply'
         name = 'js_devbot04'
-        while len(message) >= 120:
-            text = message[0:120]
-            query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': text } ] }
-            self.__post(url, query)
-            message = message[120:]
-        query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': message } ] }
+        morphs = self.morph(message)
+        s = ''
+        for morph in morphs['morphs']:
+            if morph['pos']=='BOS':
+                continue
+            if morph['pos']=='EOS':
+                continue
+            if len(s + morph['surface'])>120:
+                query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': s } ] }
+                self.__post(url, query)
+                s = morph['surface']
+        query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': s } ] }
         return self.__post(url, query)
