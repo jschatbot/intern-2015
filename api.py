@@ -98,5 +98,9 @@ class API:
                 s = morph['surface']
             else:
                 s = s + morph['surface']
+        if s != '':
+            mention = { 'mention_id': mention_id, 'user_name': user_name, 'message': s }
+            mentions.append(mention)
+        
         query = {'bot_name': name, 'replies': mentions}
         return self.__post(url, query)
