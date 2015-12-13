@@ -3,7 +3,7 @@
 exec one cycle of chatbot
 
 Usage:
-    one_cycle.py [--dev] [--term]
+    on_cycle.py [--dev] [--term]
 
 Option:
     -h, --help
@@ -17,6 +17,7 @@ Option:
 """
 
 import sys
+import random
 from docopt import docopt
 import api
 
@@ -37,13 +38,14 @@ def get_api():
 def preprocess(text):
     #TODO とりあえず最初の文の最初の名詞を利用, なければ最初の形態素
     sentences = api.sentences(text)['sentences']
-    morphs = api.morph(sentences[0])['morphs']
-    for morph in morphs:
-        if u'名詞' in morph['pos']:
-            seed = morph
-            break
-    else:
-        seed = morphs[1]
+    for sentence in api.sentences(text)['sentences']:
+        morphs = api.morph(sentence)['morphs']
+        for morph in morphs:
+            if u'名詞' in morph['pos']:
+                seed = morph
+                break
+        else:
+            seed = morphs[1]
     return seed
 
 
@@ -75,6 +77,31 @@ def twitter_based(text):
     return postprocess(sent)
     
 
+def markov_based(text):
+    seed =  preprocess(text)
+    reply_text = u''
+    for morph in api.markov_chain(seed)['morphs'][1:-1]:
+        reply_text += u':'.join(morph.split(u':')[:-1])#morph.split(':')[0]
+    return postprocess(reply_text)
+
+
+def scenario_based(text):
+    sent = api.sentences(text)
+    text = []
+    for s in sent['sentences']:
+        morphs = api.morph(s)
+        query = list()
+        for morph in morphs['morphs']:
+            query.append(u'{}:{}'.format(morph['surface'], morph['pos']))
+    texts = api.trigger(scenario_file,query)
+    for t in texts['texts']:
+        text.append(t)
+    if len(text)>0:
+        r = random.randint(0,len(text)-1)
+        return text[r]
+    return None
+
+
 def reply_one(mention_id, user_name, text):
     reply_text = twitter_based(text)
     api.send_reply(mention_id, user_name, reply_text)
@@ -91,15 +118,20 @@ if __name__ == '__main__':
 
     rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
     rewrite_rule = 'rule_test.txt'
-    
+    scenario_file = 'scenario_c09.txt'
+   
+
     if args['--term']:
         print 'chatbot on this terminal'
         print 'input your message'
         for line in iter(sys.stdin.readline, '\n'):
+            print 'twitter'
             print twitter_based(line.decode('utf-8'))
+            print 'markov'
+            print markov_based(line.decode('utf-8'))
+            print 'scenario'
+            print scenario_based(line.decode('utf-8'))
     else:
         # すべてのメンションに対して返信
         for reply in replies:
             reply_one(reply['mention_id'], reply['user_name'], reply['text'])
-
-
