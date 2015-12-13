@@ -1,0 +1,2 @@
+BOS:BOS こんにちは:感動詞 。:句点 EOS:EOS
+BOS:BOS 僕:代名詞 眞子:固有人名 。:句点 EOS:EOS
