@@ -47,6 +47,20 @@ def preprocess(text):
     return seed
 
 
+# 形態素列書き換え, こっちは文を受け取る
+def postprocess(sent):
+    morphs = api.morph(sent)['morphs']
+    query = list()
+    for morph in morphs:
+        query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
+    morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
+    
+    sent = u''
+    for morph in morphs:
+        sent += u':'.join(morph.split(u':')[:-1])
+    return sent
+
+
 def twitter_based(text):
     seed = preprocess(text)['norm_surface']
     
@@ -57,18 +71,8 @@ def twitter_based(text):
         return None
     
     # TODO とりあえず先頭の文を利用
-    # 形態素列書き換え
     sent = api.sentences(tweet_example['texts'][0])['sentences'][0]
-    morphs = api.morph(sent)['morphs']
-    query = list()
-    for morph in morphs:
-        query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
-    morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
-    
-    reply_text = u''
-    for morph in morphs:
-        reply_text += u':'.join(morph.split(u':')[:-1])
-    return reply_text
+    return postprocess(sent)
     
 
 def reply_one(mention_id, user_name, text):
