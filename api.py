@@ -96,7 +96,7 @@ class API:
                 mention = { 'mention_id': mention_id, 'user_name': user_name, 'message': s }
                 mention.append(mention)
                 s = morph['surface']
-            else
+            else:
                 s = s + morph['surface']
         query = {'bot_name': name, 'replies': [mentions] }
         return self.__post(url, query)
