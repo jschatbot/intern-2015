@@ -86,16 +86,17 @@ class API:
         name = 'js_devbot04'
         morphs = self.morph(message)
         s = ''
+        mentions = []
         for morph in morphs['morphs']:
             if morph['pos']=='BOS':
                 continue
             if morph['pos']=='EOS':
                 continue
             if len(s + morph['surface'])>120:
-                query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': s } ] }
-                self.__post(url, query)
+                mention = { 'mention_id': mention_id, 'user_name': user_name, 'message': s }
+                mention.append(mention)
                 s = morph['surface']
             else:
                 s = s + morph['surface']
-        query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': s } ] }
+        query = {'bot_name': name, 'replies': [mentions] }
         return self.__post(url, query)
