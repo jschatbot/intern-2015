@@ -184,14 +184,5 @@ if __name__ == '__main__':
                         rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
                         scenario_file = u'4_scenario_grade{}.txt'.format(i)
                         reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
-                else:
-    else:
-        # すべてのメンションに対して返信
-        for reply in replies:
-            if args['--all']:
-                for i in range(3):
-                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
-                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
-                    reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
     except Exception , e:
-        logging.error(e,exec_info=True)
+        logging.error(e,exc_info=True)
