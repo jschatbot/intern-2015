@@ -38,12 +38,12 @@ def preprocess(text):
     sentences = api.sentences(text)['sentences']
     morphs = api.morph(sentences[0])['morphs']
     for morph in morphs:
-        if '名詞' in morph['pos']:
+        if u'名詞' in morph['pos']:
             seed = morph
             break
     else:
         seed = morphs[1]
-    return seed
+    return seed['norm_surface']
 
 
 def twitter_based(text):
@@ -57,16 +57,16 @@ def twitter_based(text):
     
     # TODO とりあえず先頭の文を利用
     # 形態素列書き換え
-    sent = api.sentences(tweet_example['texts'][0])
-    morphs = api.morph(sent)
+    sent = api.sentences(tweet_example['texts'][0])['sentences'][0]
+    morphs = api.morph(sent)['morphs']
     query = list()
     for morph in morphs:
-        query.append('{}:{}'.format(morph['norm_surface'], morph['pos']))
-    morphs = api.rewrite_morph(rewrite_rule, query)
+        query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
+    morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
     
-    reply_text = ''
+    reply_text = u''
     for morph in morphs:
-        reply_text += ':'.join(morph.split(':')[:-1])
+        reply_text += u':'.join(morph.split(u':')[:-1])
     return reply_text
     
 
@@ -84,9 +84,12 @@ if __name__ == '__main__':
     replies = result['replies']
 
     rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
+    rewrite_rule = 'rule_test.txt'
 
     # すべてのメンションに対して返信
     for reply in replies:
         reply_one(reply['mention_id'], reply['user_name'], reply['text'])
 
+    if len(replies) == 0:
+        print twitter_based(u'こんにちは')
 
