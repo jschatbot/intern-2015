@@ -142,6 +142,7 @@ if __name__ == '__main__':
             print markov_based(line.decode('utf-8'))
             print 'scenario'
             print scenario_based(line.decode('utf-8'))
+            print '\ninput your message'
     else:
         # すべてのメンションに対して返信
         for reply in replies:
