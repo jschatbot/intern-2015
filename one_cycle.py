@@ -42,16 +42,15 @@ def get_api():
 def preprocess(text):
     #TODO とりあえず最初の文の最初の名詞を利用, なければ最初の形態素
     sentences = api.sentences(text)['sentences']
-    seeds = list()
     for sentence in api.sentences(text)['sentences']:
         morphs = api.morph(sentence)['morphs']
         for morph in morphs:
             if u'名詞' in morph['pos']:
-                seeds.append(morph)
-        if len(seeds) == 0:
-            seeds.append(morphs[1])
-    rand = random.randint(0, len(seeds)-1)
-    return seeds[rand]
+                seed = morph
+                break
+        else:
+            seed = morphs[1]
+    return seed
 
 
 # 形態素列書き換え, こっちは文を受け取る
@@ -71,15 +70,14 @@ def postprocess(sent):
 def twitter_based(text):
     seed = preprocess(text)['norm_surface']
 
-    lim = 30
-    rand = random.randint(0, lim-1)
-    tweet_examples = api.search_tweets(seed, limit=lim)
+    # TODO とりあえずツイート検索結果の最初のツイートを利用
+    tweet_example = api.search_tweets(seed, limit=1)
     # 空ならNoneを返す
-    if tweet_examples['count'] == 0:
+    if tweet_example['count'] == 0:
         return None
 
     # TODO とりあえず先頭の文を利用
-    sent = api.sentences(tweet_examples['texts'][rand])['sentences'][0]
+    sent = api.sentences(tweet_example['texts'][0])['sentences'][0]
     return postprocess(sent)
 
 
@@ -128,25 +126,36 @@ if __name__ == '__main__':
     api = get_api()
     logging.config.fileConfig('logging.conf')
     logger = logging.getLogger(__name__)
-    # メンションの取得
-    result = api.get_reply()
-    current_state = result['grade']
-    replies = result['replies']
-    rewrite_rule = u'4_rewrite_grade{}.txt'.format(current_state)
-    scenario_file = u'4_scenario_grade{}.txt'.format(current_state)
-#    rewrite_rule = 'rewrite_c00.txt'
-#    query = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
-#    print api.rewrite_morph(rewrite_rule, query, True).text
+    
+    try:
+        # メンションの取得
+        result = api.get_reply()
+        current_state = result['grade']
+        replies = result['replies']
+        rewrite_rule = u'4_rewrite_grade{}.txt'.format(current_state)
+        scenario_file = u'4_scenario_grade{}.txt'.format(current_state)
+    #    rewrite_rule = 'rewrite_c00.txt'
+    #    query = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
+    #    print api.rewrite_morph(rewrite_rule, query, True).text
 
-    if args['--term']:
-        print 'chatbot on this terminal'
-        print 'input your message'
-        for line in iter(sys.stdin.readline, '\n'):
-            if args['--all']:
-                for i in range(3):
-                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
-                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
-                    print i
+        if args['--term']:
+            print 'chatbot on this terminal'
+            print 'input your message'
+            for line in iter(sys.stdin.readline, '\n'):
+                if args['--all']:
+                    for i in range(3):
+                        rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                        scenario_file = u'4_scenario_grade{}.txt'.format(i)
+                        print i
+                        line = line.strip()
+                        print 'twitter'
+                        print twitter_based(line.decode('utf-8'))
+                        print 'markov'
+                        print markov_based(line.decode('utf-8'))
+                        print 'scenario'
+                        print scenario_based(line.decode('utf-8'))
+                        print '\ninput your message'
+                else:
                     line = line.strip()
                     print 'twitter'
                     print twitter_based(line.decode('utf-8'))
@@ -156,21 +165,14 @@ if __name__ == '__main__':
                     print scenario_based(line.decode('utf-8'))
                     print '\ninput your message'
             else:
-                line = line.strip()
-                print 'twitter'
-                print twitter_based(line.decode('utf-8'))
-                print 'markov'
-                print markov_based(line.decode('utf-8'))
-                print 'scenario'
-                print scenario_based(line.decode('utf-8'))
-                print '\ninput your message'
-    else:
-        # すべてのメンションに対して返信
-        for reply in replies:
-            if args['--all']:
-                for i in range(3):
-                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
-                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
-                    reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
-            else:
-                reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+                # すべてのメンションに対して返信
+                for reply in replies:
+                    if args['--all']:
+                        for i in range(3):
+                            rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                            scenario_file = u'4_scenario_grade{}.txt'.format(i)
+                            reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+                    else:
+                        reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+    except Exception , e:
+        logging.error(e,exc_info=True)
