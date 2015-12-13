@@ -121,6 +121,7 @@ def reply_one(mention_id, user_name, text):
 if __name__ == '__main__':
     args = docopt(__doc__)
     api = get_api()
+<<<<<<< HEAD
     logging.config.fileConfig('logging.conf')
     logger = logging.getLogger(__name__)
     try:
@@ -138,6 +139,38 @@ if __name__ == '__main__':
             print 'chatbot on this terminal'
             print 'input your message'
             for line in iter(sys.stdin.readline, '\n'):
+=======
+
+    # メンションの取得
+    result = api.get_reply()
+    current_state = result['grade']
+    replies = result['replies']
+
+    rewrite_rule = u'4_rewrite_grade{}.txt'.format(current_state)
+    scenario_file = u'4_scenario_grade{}.txt'.format(current_state)
+#    rewrite_rule = 'rewrite_c00.txt'
+#    query = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
+#    print api.rewrite_morph(rewrite_rule, query, True).text
+
+    if args['--term']:
+        print 'chatbot on this terminal'
+        print 'input your message'
+        for line in iter(sys.stdin.readline, '\n'):
+            if args['--all']:
+                for i in range(3):
+                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
+                    print i
+                    line = line.strip()
+                    print 'twitter'
+                    print twitter_based(line.decode('utf-8'))
+                    print 'markov'
+                    print markov_based(line.decode('utf-8'))
+                    print 'scenario'
+                    print scenario_based(line.decode('utf-8'))
+                    print '\ninput your message'
+            else:
+>>>>>>> 9e2a9b10a2c93f56e9343180a040c1aa59833702
                 line = line.strip()
                 print 'twitter'
                 print twitter_based(line.decode('utf-8'))
@@ -146,6 +179,7 @@ if __name__ == '__main__':
                 print 'scenario'
                 print scenario_based(line.decode('utf-8'))
                 print '\ninput your message'
+<<<<<<< HEAD
         else:
             # すべてのメンションに対して返信
             for reply in replies:
@@ -155,6 +189,15 @@ if __name__ == '__main__':
                         scenario_file = u'4_scenario_grade{}.txt'.format(i)
                         reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
                 else:
+=======
+    else:
+        # すべてのメンションに対して返信
+        for reply in replies:
+            if args['--all']:
+                for i in range(3):
+                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
+>>>>>>> 9e2a9b10a2c93f56e9343180a040c1aa59833702
                     reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
     except Exception , e:
         logging.error(e,exec_info=True)
