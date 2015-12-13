@@ -39,16 +39,21 @@ if __name__ == '__main__':
     reps = api.get_reply()
     print json.dumps(reps, ensure_ascii=False, indent = 4)
 
+    
+
     for rep in reps['replies']:
+        print '======================================================'
         if reps['grade'] == 0:
             scenario_file = 'scenario_c09.txt'
         elif reps['grade'] == 1:
             scenario_file = 'scenario_c09.txt'
         else :
             scenario_file = 'scenario_c09.txt'
-        sent = api.sentences(reps['text'])
+        sent = api.sentences(rep['text'])
         text = []
         for s in sent['sentences']:
+            print '-------------------------------------------------------'
+            print s
             morphs = api.morph(s)
             print json.dumps(morphs, ensure_ascii=False, indent = 4)
             query = list()
@@ -59,6 +64,10 @@ if __name__ == '__main__':
             print json.dumps(texts, ensure_ascii=False, indent = 4)
             for t in texts['texts']:
                 text.append(t)
-        r = random.randint(0,len(texts))
-        t = text[r];
-        api.send_reply(rep['mention_id'],rep['user_name'],t)
+                print t
+        if len(text)>0:
+            r = random.randint(0,len(text)-1)
+            print '++++++++++++++++++++++++++++++++++++++'
+            print str(len(text))
+            print text[r]
+            api.send_reply(rep['mention_id'],rep['user_name'],text[r])
