@@ -3,7 +3,7 @@
 exec one cycle of chatbot
 
 Usage:
-    on_cycle.py [--dev] [--term]
+    on_cycle.py [--dev] [--term] [--all]
 
 Option:
     -h, --help
@@ -14,6 +14,8 @@ Option:
         use development environment
     --term
         chatbot on your terminal
+    --all
+        check all grade
 """
 
 import sys
@@ -143,4 +145,10 @@ if __name__ == '__main__':
     else:
         # すべてのメンションに対して返信
         for reply in replies:
-            reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+            if args['--all']:
+                for i in range(3):
+                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
+                    reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+            else:
+                reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
