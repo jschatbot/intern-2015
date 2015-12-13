@@ -48,9 +48,31 @@ def preprocess(text):
 
 def twitter_based(text):
     seed = preprocess(text) 
+    
+    # TODO とりあえずツイート検索結果の最初のツイートを利用
+    tweet_example = api.search_tweets(seed, limit=1)
+    # 空ならNoneを返す
+    if tweet_example['count'] == 0:
+        return None
+    
+    # TODO とりあえず先頭の文を利用
+    # 形態素列書き換え
+    sent = api.sentences(tweet_example['texts'][0])
+    morphs = api.morph(sent)
+    query = list()
+    for morph in morphs:
+        query.append('{}:{}'.format(morph['norm_surface'], morph['pos']))
+    morphs = api.rewrite_morph(rewrite_rule, query)
+    
+    reply_text = ''
+    for morph in morphs:
+        reply_text += ':'.join(morph.split(':')[:-1])
+    return reply_text
+    
 
 def reply_one(mention_id, user_name, text):
     reply_text = twitter_based(text)
+    api.send_reply(mention_id, user_name, reply_text)
     
 
 if __name__ == '__main__':
@@ -60,6 +82,12 @@ if __name__ == '__main__':
     result = api.get_reply()
     current_state = result['grade']
     replies = result['replies']
+
+    rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
+
+    for rep in replies:
+        print rep['text']
+    exit()
     
     # すべてのメンションに対して返信
     for reply in replies:
