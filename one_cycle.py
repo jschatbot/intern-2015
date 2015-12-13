@@ -42,7 +42,7 @@ def preprocess(text):
             seed = morph
             break
     else:
-        seed = morphs[0]
+        seed = morphs[1]
     return seed
 
 
