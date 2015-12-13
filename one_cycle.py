@@ -3,7 +3,7 @@
 exec one cycle of chatbot
 
 Usage:
-    one_cycle.py [--dev]
+    one_cycle.py [--dev] [--term]
 
 Option:
     -h, --help
@@ -12,15 +12,16 @@ Option:
         Show version
     --dev
         use development environment
+    --term
+        chatbot on your terminal
 """
 
+import sys
 from docopt import docopt
 import api
 
 
 def get_api():
-    args = docopt(__doc__)
-
     if args['--dev']:
         url = 'https://52.68.75.108'
         usr = 'secret'
@@ -43,11 +44,11 @@ def preprocess(text):
             break
     else:
         seed = morphs[1]
-    return seed['norm_surface']
+    return seed
 
 
 def twitter_based(text):
-    seed = preprocess(text) 
+    seed = preprocess(text)['norm_surface']
     
     # TODO とりあえずツイート検索結果の最初のツイートを利用
     tweet_example = api.search_tweets(seed, limit=1)
@@ -76,6 +77,7 @@ def reply_one(mention_id, user_name, text):
     
 
 if __name__ == '__main__':
+    args = docopt(__doc__)
     api = get_api()
 
     # メンションの取得
@@ -85,11 +87,15 @@ if __name__ == '__main__':
 
     rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
     rewrite_rule = 'rule_test.txt'
+    
+    if args['--term']:
+        print 'chatbot on this terminal'
+        print 'input your message'
+        for line in iter(sys.stdin.readline, '\n'):
+            print twitter_based(line.decode('utf-8'))
+    else:
+        # すべてのメンションに対して返信
+        for reply in replies:
+            reply_one(reply['mention_id'], reply['user_name'], reply['text'])
 
-    # すべてのメンションに対して返信
-    for reply in replies:
-        reply_one(reply['mention_id'], reply['user_name'], reply['text'])
-
-    if len(replies) == 0:
-        print twitter_based(u'こんにちは')
 
