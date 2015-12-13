@@ -16,7 +16,7 @@ class API:
         if raw:
             return result
         return result.json()
-    
+
     def __post(self, url, query, raw=False):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         result = requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers)
@@ -28,7 +28,7 @@ class API:
         url = self.url + '/jmat/sentence'
         query = {'query': sentences}
         return self.__get(url, query)
-    
+
     def morph(self, sentence):
         url = self.url + '/jmat/morph'
         query = {'query': sentence}
@@ -60,7 +60,7 @@ class API:
         url = self.url + '/search/tweet'
         query = {'query': query, 'limit': limit}
         return self.__get(url, query)
-    
+
     def search_reply(self, query, limit=10):
         url = self.url + '/search/reply'
         query = {'query': query, 'limit': limit}
@@ -70,19 +70,21 @@ class API:
         url = self.url + '/tk/markov'
         query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
         return self.__get(url, query)
-    
+
     def rewrite_morph(self, file_name, morphs, raw=False):
         url = self.url + '/tk/rewrite'
         query = {'rule': file_name, 'morphs': morphs}
         return self.__post(url, query, raw)
-    
+
     def trigger(self, filename ,morphs):
         url = self.url + '/tk/trigger'
         query = {'rule': filename, 'morphs': morphs }
         return self.__post(url, query)
-    
+
     def send_reply(self, mention_id, user_name, message):
         url = self.url + '/tweet/send_reply'
         name = 'js_devbot04'
+        if len(message) >= 120:
+            message = message[0:120]
         query = {'bot_name': name, 'replies': [{ 'mention_id': mention_id, 'user_name': user_name, 'message': message } ] }
         return self.__post(url, query)
