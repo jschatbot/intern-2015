@@ -11,12 +11,18 @@ class API:
         if usr is None:
             self.auth = None
 
-    def __get(self, url, query):
-        return requests.get(url, params=query, auth=self.auth, verify=False).json()
+    def __get(self, url, query, raw=False):
+        result = requests.get(url, params=query, auth=self.auth, verify=False)
+        if raw:
+            return result
+        return result.json()
     
-    def __post(self, url, query):
+    def __post(self, url, query, raw=False):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers).json()
+        result = requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers)
+        if raw:
+            return result
+        return result.json()
 
     def sentences(self, sentences):
         url = self.url + '/jmat/sentence'
@@ -65,10 +71,10 @@ class API:
         query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
         return self.__get(url, query)
     
-    def rewrite_morph(self, file_name, morphs):
+    def rewrite_morph(self, file_name, morphs, raw=False):
         url = self.url + '/tk/rewrite'
         query = {'rule': file_name, 'morphs': morphs}
-        return self.__post(url, query)
+        return self.__post(url, query, raw)
     
     def trigger(self, filename ,morphs):
         url = self.url + '/tk/trigger'

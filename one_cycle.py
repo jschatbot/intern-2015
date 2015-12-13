@@ -120,9 +120,11 @@ if __name__ == '__main__':
     current_state = result['grade']
     replies = result['replies']
 
-    rewrite_rule = '4_rewrite_grade{}.txt'.format(current_state)
-    scenario_file = '4_scenario_grade{}.txt'.format(current_state)
-   
+    rewrite_rule = u'4_rewrite_grade{}.txt'.format(current_state)
+    scenario_file = u'4_scenario_grade{}.txt'.format(current_state)
+#    rewrite_rule = 'rewrite_c00.txt'
+#    query = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
+#    print api.rewrite_morph(rewrite_rule, query, True).text
 
     if args['--term']:
         print 'chatbot on this terminal'
