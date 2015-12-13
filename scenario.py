@@ -58,7 +58,7 @@ if __name__ == '__main__':
             print json.dumps(morphs, ensure_ascii=False, indent = 4)
             query = list()
             for morph in morphs['morphs']:
-                query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
+                query.append(u'{}:{}'.format(morph['surface'], morph['pos']))
             print json.dumps(query, ensure_ascii=False, indent = 4)
             texts = api.trigger(scenario_file,query)
             print json.dumps(texts, ensure_ascii=False, indent = 4)
