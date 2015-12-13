@@ -18,10 +18,11 @@ Option:
         check all grade
 """
 
-import sys
-import random
-from docopt import docopt
 import api
+from docopt import docopt
+import logging
+import random
+import sys
 
 
 def get_api():
@@ -58,7 +59,7 @@ def postprocess(sent):
     for morph in morphs:
         query.append(u'{}:{}'.format(morph['norm_surface'], morph['pos']))
     morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
-    
+
     sent = u''
     for morph in morphs[1:-1]:
         sent += u':'.join(morph.split(u':')[:-1])
@@ -67,17 +68,17 @@ def postprocess(sent):
 
 def twitter_based(text):
     seed = preprocess(text)['norm_surface']
-    
+
     # TODO とりあえずツイート検索結果の最初のツイートを利用
     tweet_example = api.search_tweets(seed, limit=1)
     # 空ならNoneを返す
     if tweet_example['count'] == 0:
         return None
-    
+
     # TODO とりあえず先頭の文を利用
     sent = api.sentences(tweet_example['texts'][0])['sentences'][0]
     return postprocess(sent)
-    
+
 
 def markov_based(text):
     seed =  preprocess(text)
@@ -114,7 +115,7 @@ def reply_one(mention_id, user_name, text):
         api.send_reply(mention_id, user_name, 'tw:' + reply_text1)
     else:
         api.send_reply(mention_id, user_name, 'mv:' + reply_text2)
-    
+
 
 if __name__ == '__main__':
     args = docopt(__doc__)
