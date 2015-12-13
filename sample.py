@@ -11,7 +11,8 @@ class API:
         return requests.get(url, params=query, auth=self.auth, verify=False).json()
 
     def __post(self, url, query):
-        return requests.post(url, params=query, auth=self.auth, verify=False).json()
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers).json()
 
 ## FROM HERE
     def trigger(self, filename ,morphs):
@@ -43,4 +44,6 @@ api = API('https://52.68.75.108', 'secret', 'js2015cps')
 #print api.morphs(s).text
 #seed = {'norm_surface': "私", 'pos': "名詞"}
 #print api.markov_chain(seed).text
-print api.send_tweet("js_devbot04","this is test tweet.").text
+#print api.send_tweet("this is test tweet.").text
+#print api.get_reply()
+print api.send_tweet("test").text
