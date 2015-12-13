@@ -46,13 +46,13 @@ class API:
 
     def tweet(self, message):
         url = self.url + '/tweet/simple'
-        name = 'js_devbot04'
+        name = 'js_tsubot04'
         query = {'bot_name': name, 'message': message}
         return self.__post(url, query)
 
     def get_reply(self):
         url = self.url + '/tweet/get_reply'
-        name = 'js_devbot04'
+        name = 'js_tsubot04'
         query = {'bot_name': name}
         return self.__get(url, query)
 
@@ -83,7 +83,7 @@ class API:
 
     def send_reply(self, mention_id, user_name, message):
         url = self.url + '/tweet/send_reply'
-        name = 'js_devbot04'
+        name = 'js_tsubot04'
         morphs = self.morph(message)
         s = ''
         mentions = []
