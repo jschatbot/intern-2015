@@ -10,10 +10,10 @@ class API:
 
     def __get(self, url, query):
         return requests.get(url, params=query, auth=self.auth, verify=False).json()
-    
+
     def __post(self, url, query):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers).json()
+        return requests.post(url, data=json.dumps(query), auth=self.auth, verify=False, headers=headers)
 
     def sentences(self, sentences):
         url = self.url + '/jmat/sentence'
@@ -41,7 +41,7 @@ class API:
         url = self.url + '/search/tweet'
         query = {'query': query, 'limit': limit}
         return self.__get(url, query)
-    
+
     def search_reply(self, query, limit=10):
         url = self.url + '/search/reply'
         query = {'query': query, 'limit': limit}
@@ -51,7 +51,7 @@ class API:
         url = self.url + '/tk/markov'
         query = {'surface': seed['norm_surface'], 'pos': seed['pos']}
         return self.__get(url, query)
-    
+
     def rewrite_morph(self, file_name, morphs):
         url = self.url + '/tk/rewrite'
         query = {'rule': file_name, 'morphs': morphs}

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import json
 
 class API:
     def __init__(self, url, usr, passwd):
@@ -46,4 +47,4 @@ api = API('https://52.68.75.108', 'secret', 'js2015cps')
 #print api.markov_chain(seed).text
 #print api.send_tweet("this is test tweet.").text
 #print api.get_reply()
-print api.send_tweet("test").text
+print api.send_tweet("abcdefg")
