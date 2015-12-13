@@ -103,8 +103,12 @@ def scenario_based(text):
 
 
 def reply_one(mention_id, user_name, text):
-    reply_text = twitter_based(text)
-    api.send_reply(mention_id, user_name, reply_text)
+    reply_text1 = twitter_based(text)
+    reply_text3 = markov_based(text)
+    reply_text3 = scenario_based(text)
+    api.send_reply(mention_id, user_name, reply_text1)
+    api.send_reply(mention_id, user_name, reply_text2)
+    api.send_reply(mention_id, user_name, reply_text3)
     
 
 if __name__ == '__main__':
