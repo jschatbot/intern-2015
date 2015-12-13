@@ -58,7 +58,7 @@ def postprocess(sent):
     morphs = api.rewrite_morph(rewrite_rule, query)['morphs']
     
     sent = u''
-    for morph in morphs:
+    for morph in morphs[1:-1]:
         sent += u':'.join(morph.split(u':')[:-1])
     return sent
 
@@ -99,7 +99,7 @@ def scenario_based(text):
     if len(text)>0:
         r = random.randint(0,len(text)-1)
         return text[r]
-    return None
+    return ''
 
 
 def reply_one(mention_id, user_name, text):
