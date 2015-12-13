@@ -85,10 +85,6 @@ if __name__ == '__main__':
 
     rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
 
-    for rep in replies:
-        print rep['text']
-    exit()
-    
     # すべてのメンションに対して返信
     for reply in replies:
         reply_one(reply['mention_id'], reply['user_name'], reply['text'])
