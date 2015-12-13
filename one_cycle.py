@@ -99,16 +99,19 @@ def scenario_based(text):
     if len(text)>0:
         r = random.randint(0,len(text)-1)
         return text[r]
-    return ''
+    return None
 
 
 def reply_one(mention_id, user_name, text):
     reply_text1 = twitter_based(text)
     reply_text2 = markov_based(text)
     reply_text3 = scenario_based(text)
-    api.send_reply(mention_id, user_name, 'tw:' + reply_text1)
-    api.send_reply(mention_id, user_name, 'mv:' + reply_text2)
-    api.send_reply(mention_id, user_name, 'sc:' + reply_text3)
+    if reply_text3 is not None:
+        api.send_reply(mention_id, user_name, 'sc:' + reply_text3)
+    elif replytext1 is not None:
+        api.send_reply(mention_id, user_name, 'tw:' + reply_text1)
+    else:
+        api.send_reply(mention_id, user_name, 'mv:' + reply_text2)
     
 
 if __name__ == '__main__':
