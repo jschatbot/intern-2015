@@ -130,6 +130,7 @@ if __name__ == '__main__':
         print 'chatbot on this terminal'
         print 'input your message'
         for line in iter(sys.stdin.readline, '\n'):
+            line = line.strip()
             print 'twitter'
             print twitter_based(line.decode('utf-8'))
             print 'markov'
@@ -139,4 +140,4 @@ if __name__ == '__main__':
     else:
         # すべてのメンションに対して返信
         for reply in replies:
-            reply_one(reply['mention_id'], reply['user_name'], reply['text'])
+            reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
