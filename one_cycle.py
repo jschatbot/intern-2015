@@ -21,6 +21,7 @@ Option:
 import api
 from docopt import docopt
 import logging
+import logging.config
 import random
 import sys
 
@@ -120,37 +121,40 @@ def reply_one(mention_id, user_name, text):
 if __name__ == '__main__':
     args = docopt(__doc__)
     api = get_api()
+    logging.config.fileConfig('logging.conf')
+    logger = logging.getLogger(__name__)
+    try:
+        # メンションの取得
+        result = api.get_reply()
+        current_state = result['grade']
+        replies = result['replies']
+        rewrite_rule = u'4_rewrite_grade{}.txt'.format(current_state)
+        scenario_file = u'4_scenario_grade{}.txt'.format(current_state)
+    #    rewrite_rule = 'rewrite_c00.txt'
+    #    query = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
+    #    print api.rewrite_morph(rewrite_rule, query, True).text
 
-    # メンションの取得
-    result = api.get_reply()
-    current_state = result['grade']
-    replies = result['replies']
-
-    rewrite_rule = u'4_rewrite_grade{}.txt'.format(current_state)
-    scenario_file = u'4_scenario_grade{}.txt'.format(current_state)
-#    rewrite_rule = 'rewrite_c00.txt'
-#    query = ['BOS:BOS', '私:代名詞', 'EOS:EOS']
-#    print api.rewrite_morph(rewrite_rule, query, True).text
-
-    if args['--term']:
-        print 'chatbot on this terminal'
-        print 'input your message'
-        for line in iter(sys.stdin.readline, '\n'):
-            line = line.strip()
-            print 'twitter'
-            print twitter_based(line.decode('utf-8'))
-            print 'markov'
-            print markov_based(line.decode('utf-8'))
-            print 'scenario'
-            print scenario_based(line.decode('utf-8'))
-            print '\ninput your message'
-    else:
-        # すべてのメンションに対して返信
-        for reply in replies:
-            if args['--all']:
-                for i in range(3):
-                    rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
-                    scenario_file = u'4_scenario_grade{}.txt'.format(i)
+        if args['--term']:
+            print 'chatbot on this terminal'
+            print 'input your message'
+            for line in iter(sys.stdin.readline, '\n'):
+                line = line.strip()
+                print 'twitter'
+                print twitter_based(line.decode('utf-8'))
+                print 'markov'
+                print markov_based(line.decode('utf-8'))
+                print 'scenario'
+                print scenario_based(line.decode('utf-8'))
+                print '\ninput your message'
+        else:
+            # すべてのメンションに対して返信
+            for reply in replies:
+                if args['--all']:
+                    for i in range(3):
+                        rewrite_rule = u'4_rewrite_grade{}.txt'.format(i)
+                        scenario_file = u'4_scenario_grade{}.txt'.format(i)
+                        reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+                else:
                     reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
-            else:
-                reply_one(reply['mention_id'], reply['user_name'], reply['text'].strip())
+    except Exception , e:
+        logging.error(e,exec_info=True)
