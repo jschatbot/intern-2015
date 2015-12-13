@@ -112,13 +112,13 @@ def reply_one(mention_id, user_name, text):
     reply_text3 = scenario_based(text)
     if reply_text3 is not None:
         print reply_text3
-        api.send_reply(mention_id, user_name, 'sc:' + reply_text3)
+        api.send_reply(mention_id, user_name, reply_text3)
     elif reply_text1 is not None:
         print reply_text1
-        api.send_reply(mention_id, user_name, 'tw:' + reply_text1)
+        api.send_reply(mention_id, user_name, reply_text1)
     else:
         print reply_text2
-        api.send_reply(mention_id, user_name, 'mv:' + reply_text2)
+        api.send_reply(mention_id, user_name, reply_text2)
 
 
 if __name__ == '__main__':
