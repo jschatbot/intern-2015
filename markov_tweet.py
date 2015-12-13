@@ -34,10 +34,11 @@ def get_api():
     return api.API(url, usr, paswd)
 
 def generate_seed(text):
+    max_length = 0
     for sentence in api.sentences(text)['sentences']:
         morphs = api.morph(sentence)['morphs']
         for morph in morphs:
-            if u'固有' in morph['pos']:
+            if u'固有' in morph['pos'] or u'名詞' in morph['pos']:
                 seed = morph
                 break
             else:
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     api = api.API('https://52.68.75.108', 'secret', 'js2015cps')
     #rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
     rewrite_rule = 'rule_test.txt'
-    text = "おはよう"
+    text = "どうして人間は魂の在処にこだわるの？"
     for morph in api.morph(text)['morphs']:
         print morph['norm_surface'] + "\t" + morph['pos']
     print markov_based(text)
