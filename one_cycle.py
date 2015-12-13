@@ -116,9 +116,8 @@ if __name__ == '__main__':
     current_state = result['grade']
     replies = result['replies']
 
-    rewrite_rule = 'team2_rewrite_{}.txt'.format(current_state)
-    rewrite_rule = 'rule_test.txt'
-    scenario_file = 'scenario_c09.txt'
+    rewrite_rule = '4_rewrite_grade{}.txt'.format(current_state)
+    scenario_file = '4_scenario_grade{}.txt'.format(current_state)
    
 
     if args['--term']:
