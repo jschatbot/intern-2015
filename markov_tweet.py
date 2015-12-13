@@ -80,10 +80,10 @@ def twitter_based(text):
 
 def markov_based(text):
     seed =  generate_seed(text)
-    sentence = ''
+    reply_text = u''
     for morph in api.markov_chain(seed)['morphs'][1:-1]:
-        sentence += ':'.join(morph.split(':')[:-1])#morph.split(':')[0]
-    return sentence
+        reply_text += u':'.join(morph.split(u':')[:-1])#morph.split(':')[0]
+    return reply_text
 
 def reply_one(mention_id, user_name, text):
     reply_text = twitter_based(text)
