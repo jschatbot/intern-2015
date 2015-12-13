@@ -21,17 +21,17 @@ class API:
 
     def morph(self, sentence):
         url = self.url + '/jmat/morph'
-        query = {'query': sentences}
+        query = {'query': sentence}
         return self.__get(url, query)
 
     def chunk(self, sentence):
         url = self.url + '/jmat/chunk'
-        query = {'query': sentences}
+        query = {'query': sentence}
         return self.__get(url, query)
 
     def synonym(self, sentence):
         url = self.url + '/jmat/synonym'
-        query = {'query': sentences}
+        query = {'query': sentence}
         return self.__get(url, query)
 
     def tweet(self, message):
@@ -59,15 +59,28 @@ class API:
 api = API('https://52.68.75.108', 'secret', 'js2015cps')
 
 s = '日本語文字列を文単位で分割する。複数文を渡すと、文ごとに区切ってくれる。'
+print s
 for sentence in api.sentences(s)['sentences']:
     print sentence
 
-for text in api.search_tweets('検索')['texts']:
-    print text
+s = '形態素解析をこんな感じでしてくれる。'
+print s
+print json.dumps( api.morph(s), ensure_ascii=False, indent = 4)
 
-seed = {'norm_surface': "今日", 'pos': "名詞"}
-for morph in  api.markov_chain(seed)['morphs']:
-    print morph,
+s = 'チャンキングをこんな感じでしてくれる。'
+print s
+print json.dumps( api.chunk(s), ensure_ascii=False, indent = 4)
+
+s = '同義語'
+print s
+print json.dumps( api.synonym(s), ensure_ascii=False, indent = 4)
+
+# for text in api.search_tweets('検索')['texts']:
+#     print text
+
+# seed = {'norm_surface': "今日", 'pos': "名詞"}
+# for morph in  api.markov_chain(seed)['morphs']:
+#     print morph,
 
 # エラーが出る。。。
 #print api.tweet('ツイートテスト! ')
